@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+    <ul class="list-group">
+        {% for pedido in pedidos %}
+            <li class="list-group-item">{{ pedido }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
