@@ -13,8 +13,21 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'list_orders' %}">Listar pedidos</a>
+                  <a class="nav-link" href="{% url 'signup' %}">Cadastrar</a>
                 </li>
+                {% if not user.is_authenticated %}
+                    <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'list_orders' %}">Listar pedidos</a>
+                    </li>
+                    <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </nav>
