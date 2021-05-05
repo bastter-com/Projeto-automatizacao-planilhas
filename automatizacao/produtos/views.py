@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from automatizacao.produtos.models import Pedido, Produto
-from automatizacao.produtos.forms import PedidoForm, LoginForm
+from automatizacao.produtos.forms import PedidoForm, LoginForm, PedidoFormSet
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,12 +10,15 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def index(request):
     if request.method == "POST":
-        form = PedidoForm(request.POST)
-        if form.is_valid():
-            form.save(user=request.user)
+        formset = PedidoFormSet(request.POST)
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.cliente = request.user
+                instance.save()
             return redirect('success')
-    form = PedidoForm()
-    return render(request, "index.html", {"form": form})
+    formset = PedidoFormSet(queryset=Pedido.objects.filter(cliente=request.user))
+    return render(request, "index.html", {"formset": formset})
 
 
 @login_required

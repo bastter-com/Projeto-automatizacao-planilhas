@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
 
 class UnidadeMedida(models.Model):
@@ -16,7 +17,7 @@ class Produto(models.Model):
 
 
 class Pedido(models.Model):
-    cliente = models.CharField(max_length=50)
+    cliente = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.IntegerField()
 
