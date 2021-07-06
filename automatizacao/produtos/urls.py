@@ -1,4 +1,4 @@
-from automatizacao.produtos.views import index, success, list_orders, create_users, login_view, logout_view
+from automatizacao.produtos.views import index, success, list_orders, create_users, login_view, logout_view, create_workbook_view
 from django.urls import path
 
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path("cadastro/", create_users, name="signup"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
+    path("create_workbook/", create_workbook_view, name="create_workbook"),
 ]

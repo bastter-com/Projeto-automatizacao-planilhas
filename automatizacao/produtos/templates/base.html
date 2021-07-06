@@ -22,10 +22,15 @@
                 {% endif %}
                 {% if user.is_authenticated %}
                     <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'list_orders' %}">Listar pedidos</a>
+                        <a class="nav-link" href="{% url 'list_orders' %}">Listar pedidos</a>
                     </li>
+                    {% if user.is_superuser %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'create_workbook' %}">Criar planilha</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                     </li>
                 {% endif %}
             </ul>

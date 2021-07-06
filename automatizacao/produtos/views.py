@@ -1,10 +1,14 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from automatizacao.produtos.models import Pedido, Produto
-from automatizacao.produtos.forms import PedidoForm, LoginForm, PedidoFormSet
-from django.contrib.auth.forms import UserCreationForm
+from automatizacao.produtos.forms import LoginForm, PedidoFormSet, CustomUserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import EmailMessage
+from automatizacao.produtos.management.commands.cria_lista_pedidos import create_workbook
+from os import listdir, remove, path
+from django.conf import settings
 
 
 @login_required
@@ -34,7 +38,7 @@ def list_orders(request):
 
 def create_users(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data['username']
@@ -42,7 +46,7 @@ def create_users(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             return redirect('index')
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
 
@@ -62,3 +66,18 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+@login_required
+@user_passes_test(lambda user: user.is_superuser)
+def create_workbook_view(request):
+    create_workbook()
+    file = [file for file in listdir('.') if file=="pedidos.xlsx"][0]
+    filepath = path.join(settings.BASE_DIR, file)
+    email = EmailMessage(
+        "Planilha de pedidos", "Segue em anexo a planilha de pedidos requisitada no sistema.", settings.EMAIL_HOST_USER, [request.user.email]
+    )
+    email.attach_file(filepath)
+    email.send()
+    remove(filepath)
+    return render(request, "create_workbook.html")
